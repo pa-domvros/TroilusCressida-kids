@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troilus and Cressida (A2/B1)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            padding-top: 20px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .title-logo {
+            height: 60px;
+            width: auto;
+            vertical-align: middle;
+            margin-right: 20px;
+        }
+        h2 {
+             border-bottom: 2px solid #3498db;
+             padding-bottom: 10px;
+        }
+        .credit-line {
+            text-align: center;
+            font-style: italic;
+            margin: 0 0 20px 0;
+            color: #555;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .tab-nav button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .tab-nav button:hover {
+            background-color: #ddd;
+        }
+        .tab-nav button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px 12px;
+        }
+
+        /* Collapsible Story */
+        .collapsible {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .collapsible:hover {
+            background-color: #2980b9;
+        }
+        .collapsible:after {
+            content: '\'; /* Plus sign */
+            color: white;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        .collapsible.active:after {
+            content: "\"; /* Minus sign */
+        }
+        .story-content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #f9f9f9;
+        }
+        .story-content p {
+            font-size: 1.1em;
+            margin-bottom: 1em;
+        }
+
+        /* Tab 1: Drag & Drop Activity */
+        #drag-activity-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        #image-pool {
+            flex: 1;
+            min-width: 450px;
+            padding: 10px;
+            border: 2px dashed #3498db;
+            border-radius: 5px;
+            background: #ecf0f1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+        }
+        .draggable-image {
+            width: 112.5px; /* 9:16 Ratio */
+            height: 200px;  /* 9:16 Ratio */
+            object-fit: cover; /* Prevents distortion */
+            cursor: grab;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        #drop-zones {
+            flex: 2;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* 8 columns for portrait images */
+            gap: 10px;
+        }
+        .drop-zone {
+            border: 2px dashed #95a5a6;
+            border-radius: 5px;
+            width: 125px;  /* Adjusted for 9:16 image */
+            height: 210px; /* Adjusted for 9:16 image */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: #bdc3c7;
+            position: relative;
+        }
+        .drop-zone span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        .drop-zone img {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+        .drag-over { background-color: #e8f5e9; }
+        .correct-order { border: 3px solid #2ecc71; }
+        .incorrect-order { border: 3px solid #e74c3c; }
+
+        /* Tab 2: Scenes & Quiz */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .scene { border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #fafafa; text-align: center; }
+        .scene img { max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 15px; }
+        .dialogue { text-align: left; font-size: 0.95em; }
+        .dialogue p { margin: 0.5em 0; }
+
+        /* Quiz Styles */
+        .quiz-question { margin: 25px 0; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px; }
+        .quiz-question p { font-weight: bold; }
+        .quiz-question label { display: block; padding: 8px; margin: 5px 0; border-radius: 4px; cursor: pointer; }
+        .correct-answer { background-color: #e8f5e9; border: 1px solid #4caf50; }
+        .incorrect-answer { background-color: #ffebee; border: 1px solid #f44336; }
+
+        /* Buttons */
+        .action-button { display: block; width: 100%; padding: 15px; font-size: 1.2em; font-weight: bold; color: #fff; background-color: #3498db; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .action-button:hover { background-color: #2980b9; }
+
+        /* Footer */
+        footer { text-align: center; padding: 20px; margin-top: 30px; background-color: #2c3e50; color: #ecf0f1; border-radius: 0 0 8px 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>
+            <img src="0.png" alt="Logo" class="title-logo">
+            <span>Shakespeare's Troilus and Cressida (A2/B1)</span>
+        </h1>
+        <p class="credit-line">Created by Panagiotis Domvros, English and Drama Teacher</p>
+
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="openTab(event, 'tab1')">Story & Activity</button>
+            <button class="tab-button" onclick="openTab(event, 'tab2')">Scenes & Quiz</button>
+        </div>
+
+        <div id="tab1" class="tab-content" style="display: block;">
+            <button type="button" class="collapsible">Read the Story</button>
+            <div class="story-content">
+                <p>The story takes place in the seventh year of the Trojan War. The Greek army is outside the city of Troy, but the war is not going well. The Greek leaders, like Agamemnon and Ulysses, are worried because their best warrior, Achilles, is proud and refuses to fight.</p>
+                <p>Inside Troy, a young prince named Troilus is not interested in the war. He is deeply in love with a beautiful woman named Cressida. Cressida's uncle, Pandarus, promises to help Troilus by arranging a secret meeting between the two lovers.</p>
+                <p>After much planning by Pandarus, Troilus and Cressida finally meet. They confess their love for each other and promise to be faithful forever. They spend one night together, hoping their love will last even during the terrible war.</p>
+                <p>In the Greek camp, Achilles spends his days in his tent with his close friend, Patroclus. He makes fun of the Greek leaders and refuses to listen to their orders. His pride is so great that he believes the Greek army cannot win without him.</p>
+                <p>The clever Greek leader, Ulysses, comes up with a plan to hurt Achilles's pride. When the Trojan hero Hector challenges any Greek to a duel, Ulysses convinces the leaders to choose the strong but foolish warrior Ajax instead of Achilles. They hope this will make Achilles jealous and want to fight again.</p>
+                <p>Meanwhile, Cressida's father, Calchas, who is a Trojan priest living with the Greeks, makes a deal. He asks the Greek leaders to exchange a Trojan prisoner for his daughter, Cressida. The Greeks agree, and they send a soldier named Diomedes to bring Cressida from Troy to the Greek camp.</p>
+                <p>Troilus and Cressida are heartbroken. They have to say goodbye after only one night together. Troilus gives Cressida his sleeve as a token to remember him by, and Cressida promises she will be true to him and never love a Greek.</p>
+                <p>When Cressida arrives at the Greek camp, the leaders are all impressed by her beauty. She is now alone and in a dangerous place. The soldier Diomedes, who brought her to the camp, immediately starts to show interest in her.</p>
+                <p>The duel between Hector and Ajax takes place. Because they are cousins, they decide not to fight to the death. They fight for a short time and then stop. That night, the Trojan leaders, including Hector and Troilus, have a feast with the Greek leaders in the Greek camp.</p>
+                <p>During the feast, Troilus asks Ulysses to take him to see Cressida. They hide and watch as the Greek soldier, Diomedes, talks with Cressida. Troilus sees Cressida give Diomedes the sleeve he had given her as a love token. She agrees to be with Diomedes.</p>
+                <p>Troilus is completely devastated. His heart is broken by Cressida's betrayal. He decides that his love is dead and that from now on, he will only think about war and getting revenge on Diomedes.</p>
+                <p>The next day, the fighting is very fierce. Hector's wife, Andromache, and his sister, Cassandra, beg him not to fight. They have had bad dreams and believe he will die. But Hector says he must fight for his honor.</p>
+                <p>During the battle, Hector kills Patroclus, Achilles's best friend. When Achilles hears this news, his pride turns into a desire for revenge. He decides to enter the battle and find Hector.</p>
+                <p>Achilles and his soldiers, the Myrmidons, find Hector when he is resting and has taken off his armor. In a dishonorable act, Achilles orders his men to attack the unarmed Hector. They kill him without a fair fight.</p>
+                <p>Achilles shows no honor. He ties Hector's dead body to the back of his horse and drags it around the walls of Troy for everyone to see. The Trojans have lost their greatest hero in the worst way possible.</p>
+                <p>The play ends with no hope. Troilus is filled with sadness and anger over Cressida's betrayal and Hector's death. The war continues, and the story of the two lovers is lost in the violence and tragedy of the conflict.</p>
+            </div>
+
+            <h2>Activity: Sort the Scenes</h2>
+            <p>Drag the images from the pool on the left and drop them into the numbered boxes in the correct story order.</p>
+            <div id="drag-activity-container">
+                <div id="image-pool"></div>
+                <div id="drop-zones"></div>
+            </div>
+            <button class="action-button" onclick="checkImageOrder()">Check Order</button>
+        </div>
+
+        <div id="tab2" class="tab-content">
+            <h2>Scenes and Dialogues</h2>
+            <div class="gallery">
+                <div class="scene"><h3>Picture 1: The Trojan War</h3><img src="1.png"><div class="dialogue"><p><b>Agamemnon:</b> For seven years we have fought this war!</p><p><b>Nestor:</b> The city of Troy is strong.</p><p><b>Ulysses:</b> And our own hero, Achilles, will not fight.</p></div></div>
+                <div class="scene"><h3>Picture 2: Troilus in Love</h3><img src="2.png"><div class="dialogue"><p><b>Troilus:</b> I cannot fight. My heart is wounded by love.</p><p><b>Pandarus:</b> Be patient, my prince. I will speak to Cressida for you.</p><p><b>Troilus:</b> My love for her is a war inside me!</p></div></div>
+                <div class="scene"><h3>Picture 3: The Secret Meeting</h3><img src="3.png"><div class="dialogue"><p><b>Pandarus:</b> Now, speak to each other! I have done my part.</p><p><b>Troilus:</b> Cressida, I love you more than words can say.</p><p><b>Cressida:</b> And I have loved you for a long time, my lord.</p></div></div>
+                <div class="scene"><h3>Picture 4: Achilles's Pride</h3><img src="4.png"><div class="dialogue"><p><b>Achilles:</b> Why should I fight for Agamemnon? He is a fool.</p><p><b>Patroclus:</b> Let's stay in our tent and laugh at the other leaders.</p><p><b>Achilles:</b> They are nothing without me.</p></div></div>
+                <div class="scene"><h3>Picture 5: Ulysses's Plan</h3><img src="5.png"><div class="dialogue"><p><b>Ulysses:</b> We must make Achilles jealous.</p><p><b>Agamemnon:</b> How?</p><p><b>Ulysses:</b> Let Hector challenge a Greek. We will choose Ajax, not Achilles. His pride will be hurt!</p></div></div>
+                <div class="scene"><h3>Picture 6: The Exchange</h3><img src="6.png"><div class="dialogue"><p><b>Agamemnon:</b> We will trade our prisoner for your daughter, Calchas.</p><p><b>Diomedes:</b> I will go to Troy and bring Cressida here.</p><p><b>Calchas:</b> Thank you, my lords.</p></div></div>
+                <div class="scene"><h3>Picture 7: The Sad Goodbye</h3><img src="7.png"><div class="dialogue"><p><b>Cressida:</b> We only had one night together.</p><p><b>Troilus:</b> Be true to me, Cressida. Do not forget me.</p><p><b>Cressida:</b> I will be faithful. I promise.</p></div></div>
+                <div class="scene"><h3>Picture 8: Cressida's Arrival</h3><img src="8.png"><div class="dialogue"><p><b>Ulysses:</b> Welcome to the Greek camp, Cressida.</p><p><b>Diomedes:</b> She is very beautiful.</p><p><b>Cressida:</b> I am a stranger here. I must be careful.</p></div></div>
+                <div class="scene"><h3>Picture 9: The Duel of Cousins</h3><img src="9.png"><div class="dialogue"><p><b>Hector:</b> Ajax, you are my cousin. We should not fight to the death.</p><p><b>Ajax:</b> You are right. Let us stop.</p><p><b>Hector:</b> Tonight, we will feast together as friends!</p></div></div>
+                <div class="scene"><h3>Picture 10: Cressida's Betrayal</h3><img src="10.png"><div class="dialogue"><p><b>Diomedes:</b> Give me that sleeve as a promise.</p><p><b>Cressida:</b> It was a gift from a Trojan... but yes, you can have it.</p><p><b>Troilus:</b> (hiding) She breaks her promise! It is not possible!</p></div></div>
+                <div class="scene"><h3>Picture 11: A Broken Heart</h3><img src="11.png"><div class="dialogue"><p><b>Troilus:</b> My love is gone. My heart is broken.</p><p><b>Ulysses:</b> This is what happens in war, young prince.</p><p><b>Troilus:</b> Tomorrow, I will find Diomedes on the battlefield!</p></div></div>
+                <div class="scene"><h3>Picture 12: Hector's Last Day</h3><img src="12.png"><div class="dialogue"><p><b>Andromache:</b> Do not fight today, Hector! I had a bad dream.</p><p><b>Cassandra:</b> Listen to her! Today is a day of death!</p><p><b>Hector:</b> I must fight. My honor is more important than my life.</p></div></div>
+                <div class="scene"><h3>Picture 13: The Death of Patroclus</h3><img src="13.png"><div class="dialogue"><p><b>Soldier:</b> Achilles! Hector has killed your friend, Patroclus!</p><p><b>Achilles:</b> Patroclus? No!</p><p><b>Achilles:</b> Now I will fight! Hector will die for this!</p></div></div>
+                <div class="scene"><h3>Picture 14: The Dishonorable Kill</h3><img src="14.png"><div class="dialogue"><p><b>Achilles:</b> I have found you, Hector! You are unarmed.</p><p><b>Hector:</b> This is not an honorable way to fight, Achilles.</p><p><b>Achilles:</b> Myrmidons, attack! Kill him now!</p></div></div>
+                <div class="scene"><h3>Picture 15: The Fall of a Hero</h3><img src="15.png"><div class="dialogue"><p><b>Achilles:</b> Tie his body to my horse!</p><p><b>Achilles:</b> Drag him through the dirt! Let all of Troy see their hero now!</p><p><b>Soldier:</b> A terrible day.</p></div></div>
+                <div class="scene"><h3>Picture 16: No Hope</h3><img src="16.png"><div class="dialogue"><p><b>Troilus:</b> Hector is dead. Cressida is false.</p><p><b>Troilus:</b> There is no hope left. Only war.</p><p><b>Pandarus:</b> This is the end of our story.</p></div></div>
+            </div>
+
+            <h2>Check Your Understanding</h2>
+            <form id="quizForm">
+                <div class="quiz-question"><p>1. The play takes place during which famous war?</p><label><input type="radio" name="q1" value="a"> The Peloponnesian War</label><label><input type="radio" name="q1" value="b"> The Trojan War</label><label><input type="radio" name="q1" value="c"> The Hundred Years' War</label><label><input type="radio" name="q1" value="d"> The Persian War</label></div>
+                <div class="quiz-question"><p>2. Who is the Trojan prince in love with Cressida?</p><label><input type="radio" name="q2" value="a"> Hector</label><label><input type="radio" name="q2" value="b"> Achilles</label><label><input type="radio" name="q2" value="c"> Troilus</label><label><input type="radio" name="q2" value="d"> Pandarus</label></div>
+                <div class="quiz-question"><p>3. Why does the great Greek warrior, Achilles, refuse to fight?</p><label><input type="radio" name="q3" value="a"> He is injured.</label><label><input type="radio" name="q3" value="b"> He is a coward.</label><label><input type="radio" name="q3" value="c"> He is proud and angry at the Greek leaders.</label><label><input type="radio" name="q3" value="d"> He is secretly in love with Cressida.</label></div>
+                <div class="quiz-question"><p>4. Why is Cressida sent from Troy to the Greek camp?</p><label><input type="radio" name="q4" value="a"> She is a spy for the Trojans.</label><label><input type="radio" name="q4" value="b"> She is traded for a Trojan prisoner.</label><label><input type="radio" name="q4" value="c"> She runs away to be with Diomedes.</label><label><input type="radio" name="q4" value="d"> She is banished from Troy.</label></div>
+                <div class="quiz-question"><p>5. What token does Troilus give Cressida that she later gives to Diomedes?</p><label><input type="radio" name="q5" a="a"> A ring</label><label><input type="radio" name="q5" value="b"> A love letter</label><label><input type="radio" name="q5" value="c"> A lock of his hair</label><label><input type="radio" name="q5" value="d"> His sleeve</label></div>
+                <div class="quiz-question"><p>6. How do the Greeks try to make Achilles jealous?</p><label><input type="radio" name="q6" value="a"> By praising Hector more than him.</label><label><input type="radio" name="q6" value="b"> By choosing Ajax to fight Hector instead of him.</label><label><input type="radio" name="q6" value="c"> By giving all the best food to other soldiers.</label><label><input type="radio" name="q6" value="d"> By sending Cressida to talk to other leaders.</label></div>
+                <div class="quiz-question"><p>7. Who is Achilles's best friend that is killed by Hector?</p><label><input type="radio" name="q7" value="a"> Ajax</label><label><input type="radio" name="q7" value="b"> Ulysses</label><label><input type="radio" name="q7" value="c"> Patroclus</label><label><input type="radio" name="q7" value="d"> Diomedes</label></div>
+                <div class="quiz-question"><p>8. What makes Achilles finally decide to fight?</p><label><input type="radio" name="q8" value="a"> The Greeks promise him more gold.</label><label><input type="radio" name="q8" value="b"> He wants revenge for Patroclus's death.</label><label><input type="radio" name="q8" value="c"> Cressida begs him to fight for her.</label><label><input type="radio" name="q8" value="d"> He gets bored of sitting in his tent.</label></div>
+                <div class="quiz-question"><p>9. How does Hector die?</p><label><input type="radio" name="q9" value="a"> He is killed in a fair duel with Achilles.</label><label><input type="radio" name="q9" value="b"> He is killed by Ajax in their duel.</label><label><input type="radio" name="q9" value="c"> He is killed by Achilles and his men when he is unarmed.</label><label><input type="radio" name="q9" value="d"> He is accidentally killed by his own soldiers.</label></div>
+                <div class="quiz-question"><p>10. What is the overall feeling at the end of the play?</p><label><input type="radio" name="q10" value="a"> Hopeful, because the war is over.</label><label><input type="radio" name="q10" value="b"> Happy, because Troilus and Cressida get back together.</label><label><input type="radio" name="q10" value="c"> Sad and hopeless, because love and honor are lost.</label><label><input type="radio" name="q10" value="d"> Funny, because Pandarus tells a joke.</label></div>
+                <button type="button" class="action-button" onclick="checkQuizAnswers()">Check My Answers</button>
+                <div id="quiz-results"></div>
+            </form>
+        </div>
+
+    </div>
+    
+    <footer>
+        ✨✍️ Created by Panagiotis Domvros, English and Drama Teacher, All Rights Reserved ✍️✨
+    </footer>
+
+    <script>
+        // --- COLLAPSIBLE STORY ---
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const coll = document.querySelector(".collapsible");
+            coll.addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } 
+            });
+        });
+
+        // --- TAB NAVIGATION ---
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // --- DRAG AND DROP ACTIVITY ---
+        let isDragging = false;
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const imagePool = document.getElementById('image-pool');
+            const dropZonesContainer = document.getElementById('drop-zones');
+            const imageCount = 16;
+            let images = [];
+
+            for (let i = 1; i <= imageCount; i++) { images.push(i); }
+            images.sort(() => Math.random() - 0.5);
+
+            images.forEach(num => {
+                const img = document.createElement('img');
+                img.src = `${num}.png`;
+                img.className = 'draggable-image';
+                img.draggable = true;
+                img.id = `img-${num}`;
+                img.addEventListener('dragstart', dragStart);
+                img.addEventListener('dragend', dragEnd);
+                imagePool.appendChild(img);
+            });
+
+            for (let i = 1; i <= imageCount; i++) {
+                const zone = document.createElement('div');
+                zone.className = 'drop-zone';
+                zone.id = `zone-${i}`;
+                const numberSpan = document.createElement('span');
+                numberSpan.textContent = i;
+                zone.appendChild(numberSpan);
+                zone.addEventListener('dragover', dragOver);
+                zone.addEventListener('dragleave', dragLeave);
+                zone.addEventListener('drop', drop);
+                dropZonesContainer.appendChild(zone);
+            }
+        });
+
+        function dragStart(e) {
+            isDragging = true;
+            e.dataTransfer.setData('text/plain', e.target.id);
+        }
+        
+        function dragEnd(e) {
+            isDragging = false;
+        }
+
+        // Auto-scroll functionality
+        document.addEventListener('dragover', function(e) {
+            if (!isDragging) return;
+
+            const viewportHeight = window.innerHeight;
+            const scrollThreshold = 60; // pixels from edge
+
+            if (e.clientY < scrollThreshold) {
+                window.scrollBy(0, -10); // Scroll up
+            } else if (e.clientY > viewportHeight - scrollThreshold) {
+                window.scrollBy(0, 10); // Scroll down
+            }
+        });
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            const id = e.dataTransfer.getData('text');
+            const draggableElement = document.getElementById(id);
+            const dropZone = e.currentTarget;
+            
+            if (dropZone.querySelector('img')) {
+                 document.getElementById('image-pool').appendChild(dropZone.querySelector('img'));
+            }
+            dropZone.appendChild(draggableElement);
+        }
+        
+        function checkImageOrder() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach((zone, index) => {
+                const correctNumber = index + 1;
+                const image = zone.querySelector('img');
+                
+                zone.classList.remove('correct-order', 'incorrect-order');
+
+                if (image) {
+                    const imageIdNumber = parseInt(image.id.split('-')[1]);
+                    if (imageIdNumber === correctNumber) {
+                        zone.classList.add('correct-order');
+                    } else {
+                        zone.classList.add('incorrect-order');
+                    }
+                } else {
+                     zone.classList.add('incorrect-order');
+                }
+            });
+        }
+
+        // --- QUIZ FUNCTIONALITY ---
+        function checkQuizAnswers() {
+            const correctAnswers = {
+                q1: 'b', q2: 'c', q3: 'c', q4: 'b', q5: 'd',
+                q6: 'b', q7: 'c', q8: 'b', q9: 'c', q10: 'c'
+            };
+            let score = 0;
+            const form = document.getElementById('quizForm');
+            const resultsDiv = document.getElementById('quiz-results');
+            
+            const allLabels = form.getElementsByTagName('label');
+            for (let label of allLabels) {
+                label.classList.remove('correct-answer', 'incorrect-answer');
+            }
+
+            for (const [question, correctAnswer] of Object.entries(correctAnswers)) {
+                const selectedOption = form.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    const parentLabel = selectedOption.parentElement;
+                    if (selectedOption.value === correctAnswer) {
+                        score++;
+                        parentLabel.classList.add('correct-answer');
+                    } else {
+                        parentLabel.classList.add('incorrect-answer');
+                        const correctLabel = form.querySelector(`input[name="${question}"][value="${correctAnswer}"]`).parentElement;
+                        correctLabel.classList.add('correct-answer');
+                    }
+                }
+            }
+            resultsDiv.textContent = `You scored ${score} out of ${Object.keys(correctAnswers).length}!`;
+        }
+    </script>
+
+</body>
+</html>
